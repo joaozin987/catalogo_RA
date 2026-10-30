@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Ver na mesa</title>
+
+  <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
+  <link rel="stylesheet" href="/static/ar.css?v=10">
+</head>
+
+<body>
+  <div class="ar-top">
+    <a class="ar-back" href="/">‹ Cardápio</a>
+  </div>
+
+  <a-scene embedded vr-mode-ui="enabled: false" arjs="sourceType: webcam; debugUIEnabled: false;">
+    <a-light type="ambient" intensity="1.1"></a-light>
+    <a-light type="directional" intensity="1.4" position="1 3 2"></a-light>
+
+    <!-- Cartão da mesa -->
+    <a-marker type="pattern" url="/static/marker/marcador.patt" smooth="true" smoothCount="8" smoothTolerance="0.01" smoothThreshold="5">
+      <a-entity animation="property: rotation; to: 0 360 0; dur: 16000; easing: linear; loop: true">
+        <a-entity class="product-model"></a-entity>
+      </a-entity>
+      <!-- Foto do produto em pé sobre o cartão (sempre virada para a câmera) -->
+      <a-entity class="photo-holder" face-camera visible="false">
+        <a-image class="photo-img" transparent="true" alpha-test="0.05" shader="flat"></a-image>
+      </a-entity>
+    </a-marker>
+
+    <!-- Marcador Hiro (do AR.js), útil para testes -->
+    <a-marker preset="hiro" smooth="true" smoothCount="8" smoothTolerance="0.01" smoothThreshold="5">
+      <a-entity animation="property: rotation; to: 0 360 0; dur: 16000; easing: linear; loop: true">
+        <a-entity class="product-model"></a-entity>
+      </a-entity>
+      <!-- Foto do produto em pé sobre o cartão (sempre virada para a câmera) -->
+      <a-entity class="photo-holder" face-camera visible="false">
+        <a-image class="photo-img" transparent="true" alpha-test="0.05" shader="flat"></a-image>
+      </a-entity>
+    </a-marker>
+
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <div class="ar-bottom">
+    <div class="ar-status" id="ar-status">Aponte a câmera para o cartão da mesa</div>
+    <div class="ar-card">
+      <strong id="ar-name"></strong>
+      <span id="ar-price"></span>
+    </div>
+  </div>
+
+  <script src="/static/products.js?v=10"></script>
+  <script src="/static/ar.js?v=10"></script>
+</body>
+</html>

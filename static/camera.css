@@ -1,0 +1,167 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #111;
+  font-family: Inter, Arial, sans-serif;
+  overscroll-behavior: none;
+}
+
+#cam {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#product {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  --poster-color: transparent;
+  --progress-bar-color: #fff;
+}
+
+.top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding: max(14px, env(safe-area-inset-top)) 14px 0;
+  pointer-events: none;
+}
+
+.back {
+  display: inline-block;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: rgba(23, 23, 23, 0.85);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  pointer-events: auto;
+}
+
+.bottom {
+  position: fixed;
+  left: 14px;
+  right: 14px;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 10;
+  display: grid;
+  gap: 10px;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.status {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(23, 23, 23, 0.85);
+  color: white;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.status[hidden] {
+  display: none;
+}
+
+.status.is-error {
+  background: rgba(163, 32, 32, 0.95);
+  font-size: 14px;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px 12px 18px;
+  border-radius: 16px;
+  background: white;
+  color: #202020;
+}
+
+.card-info {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.card-info strong {
+  font-size: 16px;
+}
+
+.card-info span {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.card-actions button {
+  padding: 11px 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: white;
+  color: #202020;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.card-actions button[aria-pressed="true"] {
+  border-color: #171717;
+  background: #171717;
+  color: white;
+}
+
+/* Modo foto */
+.photo-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.photo-layer[hidden] {
+  display: none;
+}
+
+.photo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(72vw, 440px);
+  transform: translate(-50%, -50%);
+  will-change: transform;
+}
+
+.photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  filter: drop-shadow(0 18px 14px rgba(0, 0, 0, 0.38));
+}
+
+.photo.is-raw img {
+  border-radius: 18px;
+}

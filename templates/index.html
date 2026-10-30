@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cardápio digital em 3D. Veja o prato em realidade aumentada na sua mesa.">
+  <title>Cardápio 3D</title>
+
+  <!-- Versão fixa do model-viewer (oficial do Google) -->
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+  <link rel="stylesheet" href="/static/style.css?v=10">
+</head>
+
+<body>
+  <main class="page">
+
+    <header class="topbar">
+      <p class="eyebrow">CARDÁPIO</p>
+      <h1>Escolha seu pedido.</h1>
+      <p class="subtitle">Toque em um item para ver em 3D e colocar na sua mesa.</p>
+    </header>
+
+    <nav class="categories" id="categories" aria-label="Categorias"></nav>
+
+    <section class="grid" id="grid" aria-live="polite"></section>
+
+    <footer>Cardápio em realidade aumentada</footer>
+  </main>
+
+  <!-- Detalhe do produto: 3D + AR -->
+  <dialog id="product-dialog" class="sheet" aria-labelledby="product-name">
+    <button class="sheet-close" id="sheet-close" type="button" aria-label="Fechar">×</button>
+
+    <div class="sheet-grid">
+      <div class="viewer-stage">
+        <model-viewer
+          id="product-viewer"
+          alt="Modelo 3D do produto"
+          ar
+          ar-modes="webxr scene-viewer quick-look"
+          ar-placement="floor"
+          ar-scale="auto"
+          xr-environment
+          camera-controls
+          touch-action="pan-y"
+          auto-rotate
+          shadow-intensity="1"
+          shadow-softness="0.8"
+          exposure="1"
+          environment-image="neutral"
+          camera-orbit="0deg 75deg auto"
+          reveal="auto">
+
+          <button slot="ar-button" hidden type="button"></button>
+
+          <div slot="progress-bar" class="loading">
+            <span class="spinner"></span>
+            Carregando modelo 3D...
+          </div>
+        </model-viewer>
+
+        <div class="photo-stage" id="photo-stage" hidden>
+          <img id="stage-img" alt="" hidden>
+          <span id="stage-emoji" class="stage-emoji" aria-hidden="true" hidden></span>
+        </div>
+
+      </div>
+
+      <div class="sheet-body">
+        <span class="tag" id="product-category"></span>
+        <h2 id="product-name"></h2>
+        <p class="description" id="product-desc"></p>
+        <div class="price" id="product-price"></div>
+
+        <a class="primary-link" id="camera-link" href="/camera">Ver na minha mesa</a>
+        <a class="secondary-link" id="marker-link" href="/ar">Usar o cartão da mesa (fica mais fixo)</a>
+
+        <p class="hint" id="viewer-hint">Arraste para girar · Use dois dedos para aproximar</p>
+
+        <p class="ar-tip">
+          <strong>Como funciona:</strong> toque em “Ver na minha mesa” e permita a câmera.
+          O prato aparece na tela, na direção para onde você apontar. Arraste para girar,
+          use dois dedos para aproximar, afastar e mover.
+        </p>
+
+        <div id="model-error" class="model-error" role="alert" hidden>
+          Não foi possível carregar o modelo 3D. Confira a conexão e tente novamente.
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+
+  <script src="/static/products.js?v=10"></script>
+  <script src="/static/app.js?v=10"></script>
+</body>
+</html>
