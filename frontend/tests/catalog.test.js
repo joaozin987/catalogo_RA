@@ -30,6 +30,46 @@ describe("catálogo e API", () => {
 });
 
 describe("interface do catálogo", () => {
+  it("oculta o indicador quando o modelo termina de carregar", async () => {
+    const wrapper = mount(CatalogView, { props: { products } });
+    await wrapper.find(".grid .card").trigger("click");
+    expect(wrapper.find(".loading").isVisible()).toBe(true);
+    await wrapper.find("model-viewer").trigger("load");
+    expect(wrapper.find(".loading").exists()).toBe(false);
+    expect(wrapper.find('[slot="progress-bar"]').exists()).toBe(true);
+    wrapper.unmount();
+  });
+  it("oculta o indicador e exibe a mensagem quando o modelo falha", async () => {
+    const wrapper = mount(CatalogView, { props: { products } });
+    await wrapper.find(".grid .card").trigger("click");
+    await wrapper.find("model-viewer").trigger("error");
+    expect(wrapper.find(".loading").exists()).toBe(false);
+    expect(wrapper.find("[role=alert]").isVisible()).toBe(true);
+    wrapper.unmount();
+  });
+  it("reinicia o indicador ao selecionar outro modelo", async () => {
+    const other = { ...products[0], id: "outro", name: "Outro", glb: "/static/outro.glb" };
+    const wrapper = mount(CatalogView, { props: { products: [products[0], other] } });
+    await wrapper.findAll(".grid .card")[0].trigger("click");
+    await wrapper.find("model-viewer").trigger("load");
+    expect(wrapper.find(".loading").exists()).toBe(false);
+    await wrapper.findAll(".grid .card")[1].trigger("click");
+    expect(wrapper.find(".loading").isVisible()).toBe(true);
+    expect(wrapper.find("model-viewer").attributes("src")).toBe(other.glb);
+    await wrapper.find("model-viewer").trigger("load");
+    expect(wrapper.find(".loading").exists()).toBe(false);
+    wrapper.unmount();
+  });
+  it("não reexibe o indicador ao reabrir o mesmo modelo já carregado", async () => {
+    const wrapper = mount(CatalogView, { props: { products } });
+    await wrapper.find(".grid .card").trigger("click");
+    await wrapper.find("model-viewer").trigger("load");
+    await wrapper.find(".sheet-close").trigger("click");
+    await wrapper.find(".grid .card").trigger("click");
+    expect(wrapper.find("dialog").element.open).toBe(true);
+    expect(wrapper.find(".loading").exists()).toBe(false);
+    wrapper.unmount();
+  });
   it("filtra categorias sem alterar os produtos", async () => {
     const wrapper = mount(CatalogView, { props: { products } });
     expect(wrapper.findAll(".grid .card")).toHaveLength(2);

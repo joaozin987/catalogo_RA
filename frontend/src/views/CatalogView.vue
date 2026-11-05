@@ -8,11 +8,15 @@ const visibleProducts = computed(() => props.products.filter((product) => catego
 const selected = ref(null);
 const dialog = ref(null);
 const modelError = ref(false);
+const modelLoading = ref(false);
 const photo = computed(() => selected.value?.cutout || selected.value?.image);
 
 async function openProduct(product) {
+  if (selected.value?.id !== product.id || selected.value?.glb !== product.glb) {
+    modelLoading.value = Boolean(product.glb);
+    modelError.value = false;
+  }
   selected.value = product;
-  modelError.value = false;
   await nextTick();
   if (!dialog.value.open) dialog.value.showModal();
 }
@@ -55,9 +59,11 @@ async function openProduct(product) {
             :alt="'Modelo 3D de ' + selected.name" id="product-viewer" ar ar-modes="webxr scene-viewer quick-look"
             ar-placement="floor" ar-scale="auto" xr-environment camera-controls touch-action="pan-y" auto-rotate
             shadow-intensity="1" shadow-softness="0.8" exposure="1" environment-image="neutral" camera-orbit="0deg 75deg auto"
-            reveal="auto" @error="modelError = true" @load="modelError = false">
+            reveal="auto" @error="modelError = true; modelLoading = false" @load="modelError = false; modelLoading = false">
             <button slot="ar-button" hidden type="button"></button>
-            <div slot="progress-bar" class="loading"><span class="spinner"></span>Carregando modelo 3D...</div>
+            <div slot="progress-bar">
+              <div v-if="modelLoading" class="loading"><span class="spinner"></span>Carregando modelo 3D...</div>
+            </div>
           </model-viewer>
           <div v-else class="photo-stage" :style="{ background: selected.tint || '#f1f2f4' }">
             <img v-if="photo" id="stage-img" :src="photo" :alt="selected.name">
