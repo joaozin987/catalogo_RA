@@ -1,0 +1,15 @@
+[
+  {
+    "id": "classico",
+    "category": "Hambúrgueres",
+    "name": "Clássico",
+    "desc": "Pão brioche, hambúrguer bovino, queijo, alface, tomate e molho da casa.",
+    "price": "R$ 29,90",
+    "emoji": "🍔",
+    "tint": "#fde7d3",
+    "image": "/static/images/images (1).jpg",
+    "cutout": "",
+    "glb": "/static/models/hamburguer-teste.glb",
+    "usdz": ""
+  }
+]

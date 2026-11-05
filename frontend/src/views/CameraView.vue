@@ -1,0 +1,64 @@
+<script setup>
+import { onBeforeUnmount, onMounted, ref } from "vue";
+import { mountCamera } from "../controllers/camera.js";
+const props = defineProps({ product: { type: Object, required: true } });
+const root = ref(null);
+let cleanup;
+onMounted(() => { cleanup = mountCamera(root.value, props.product); });
+onBeforeUnmount(() => cleanup?.());
+</script>
+<template>
+<div ref="root">
+
+  <!-- Câmera traseira ao fundo -->
+  <video id="cam" playsinline muted autoplay></video>
+
+  <!-- Produto 3D por cima da câmera -->
+  <model-viewer
+    id="product"
+    alt="Modelo 3D do produto"
+    camera-controls
+    touch-action="none"
+    interaction-prompt="none"
+    shadow-intensity="1.2"
+    shadow-softness="1"
+    exposure="1.1"
+    environment-image="neutral"
+    camera-orbit="0deg 78deg 170%"
+    min-camera-orbit="-Infinity 20deg 25%"
+    max-camera-orbit="Infinity 95deg 450%"
+    loading="eager"
+    reveal="auto">
+  </model-viewer>
+
+  <!-- Modo foto: a imagem do produto por cima da câmera -->
+  <div class="photo-layer" id="photo-layer" hidden>
+    <div class="photo" id="photo">
+      <img id="photo-img" alt="" draggable="false">
+    </div>
+  </div>
+
+  <div class="top">
+    <a class="back" href="/">‹ Cardápio</a>
+  </div>
+
+  <div class="bottom">
+    <div class="status" id="cam-status">Arraste para girar · Pinça para ajustar o tamanho · Dois dedos para mover</div>
+
+    <div class="card">
+      <div class="card-info">
+        <strong id="cam-name"></strong>
+        <span id="cam-price"></span>
+      </div>
+      <div class="card-actions">
+        <button type="button" id="btn-spin" aria-pressed="false">Girar</button>
+        <button type="button" id="btn-reset">Centralizar</button>
+      </div>
+    </div>
+  </div>
+
+
+
+
+</div>
+</template>

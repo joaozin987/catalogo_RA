@@ -1,0 +1,33 @@
+{
+  "name": "catalogo-ra-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "vitest run",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "vue": "3.5.45"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@vitejs/plugin-vue": "6.0.10",
+    "@vue/test-utils": "2.4.11",
+    "eslint": "10.14.0",
+    "eslint-plugin-vue": "10.12.0",
+    "jsdom": "29.1.1",
+    "vite": "8.3.6",
+    "vitest": "5.1.0"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "overrides": {
+    "glob": "14.0.2",
+    "minimatch": "11.0.1"
+  }
+}
