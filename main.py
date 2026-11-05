@@ -1,8 +1,11 @@
+import mimetypes
 from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
+
+mimetypes.add_type("image/webp", ".webp")
 
 BASE_DIR = Path(__file__).resolve().parent
 

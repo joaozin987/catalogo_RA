@@ -3,8 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const grid = $("grid");
   const catNav = $("categories");
   const dialog = $("product-dialog");
-  const viewer = $("product-viewer");
-  const errorBox = $("model-error");
   const stagePhoto = $("photo-stage");
   const stageImg = $("stage-img");
   const stageEmoji = $("stage-emoji");
@@ -42,18 +40,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const media = el("div", "card-media");
       media.style.background = p.tint || "#f1f1f1";
-      if (p.image) {
+      const photoSrc = p.cutout || p.image;
+      if (photoSrc) {
         const img = new Image();
-        img.src = p.image;
+        img.src = photoSrc;
         img.alt = p.name;
         img.loading = "lazy";
+        img.classList.toggle("is-cutout", Boolean(p.cutout));
         media.appendChild(img);
       } else {
         const emoji = el("span", "card-emoji", p.emoji || "🍽️");
         emoji.setAttribute("aria-hidden", "true");
         media.appendChild(emoji);
       }
-      media.appendChild(el("span", "badge", "3D"));
+      media.appendChild(el("span", "badge", photoSrc ? "FOTO" : "EM BREVE"));
 
       const body = el("div", "card-body");
       body.appendChild(el("h3", "card-title", p.name));
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const foot = el("div", "card-foot");
       foot.appendChild(el("span", "card-price", p.price));
-      foot.appendChild(el("span", "card-cta", "Ver em 3D"));
+      foot.appendChild(el("span", "card-cta", photoSrc ? "Ver foto" : "Personalizar"));
       body.appendChild(foot);
 
       card.append(media, body);
@@ -76,44 +76,25 @@ document.addEventListener("DOMContentLoaded", () => {
     $("product-desc").textContent = p.desc;
     $("product-price").textContent = p.price;
 
-    errorBox.hidden = true;
-    const has3d = Boolean(p.glb);
     const photoSrc = p.cutout || p.image;
 
-    // Sem modelo 3D, mostra a foto do produto (nunca o astronauta de teste)
-    viewer.style.display = has3d ? "" : "none";
-    stagePhoto.hidden = has3d;
-    $("viewer-hint").hidden = !has3d;
-
-    if (has3d) {
-      viewer.alt = "Modelo 3D de " + p.name;
-      viewer.src = p.glb;
-      if (p.usdz) viewer.setAttribute("ios-src", p.usdz);
-      else viewer.removeAttribute("ios-src");
-      viewer.cameraOrbit = "0deg 75deg auto";
-      viewer.autoRotate = true;
-    } else {
-      viewer.removeAttribute("src");
-      stagePhoto.style.background = p.tint || "#f1f2f4";
-      stageImg.hidden = !photoSrc;
-      stageEmoji.hidden = Boolean(photoSrc);
-      if (photoSrc) {
-        stageImg.src = photoSrc;
-        stageImg.alt = p.name;
-      }
-      stageEmoji.textContent = p.emoji || "🍽️";
+    stagePhoto.hidden = false;
+    stagePhoto.style.background = p.tint || "#f1f2f4";
+    stageImg.hidden = !photoSrc;
+    stageEmoji.hidden = Boolean(photoSrc);
+    if (photoSrc) {
+      stageImg.src = photoSrc;
+      stageImg.alt = p.name;
     }
-
-    // Botões de mesa só aparecem quando há o que mostrar
-    $("camera-link").hidden = !(p.glb || photoSrc);
-    $("marker-link").hidden = !(p.glb || photoSrc);
+    stageEmoji.textContent = p.emoji || "🍽️";
+    const hasPhoto = Boolean(photoSrc);
+    $("camera-link").hidden = !hasPhoto;
+    $("marker-link").hidden = !hasPhoto;
+    dialog.querySelector(".ar-tip").hidden = !hasPhoto;
     $("camera-link").href = "/camera?id=" + encodeURIComponent(p.id);
     $("marker-link").href = "/ar?id=" + encodeURIComponent(p.id);
     dialog.showModal();
   }
-
-  viewer.addEventListener("load", () => { errorBox.hidden = true; });
-  viewer.addEventListener("error", () => { errorBox.hidden = false; });
 
   $("sheet-close").addEventListener("click", () => dialog.close());
   dialog.addEventListener("click", (event) => {

@@ -29,8 +29,8 @@ document.addEventListener("DOMContentLoaded", () => {
     status.hidden = false;
   }
 
-  // Foto (recorte sem fundo ou foto do cardápio) quando o produto não tem modelo 3D
-  const photoSrc = product.cutout || (!product.glb && product.image ? product.image : "");
+  // Use o modelo 3D quando houver; a foto continua sendo o fallback.
+  const photoSrc = product.glb ? "" : (product.cutout || product.image || "");
 
   if (photoSrc) {
     document.querySelectorAll(".product-model").forEach((model) => model.setAttribute("visible", "false"));

@@ -1,12 +1,6 @@
-// Modelo de teste, usado enquanto o produto não tem o seu próprio .glb
-const DEMO_GLB = "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
-const DEMO_USDZ = "https://modelviewer.dev/shared-assets/models/Astronaut.usdz";
-
 // Catálogo. Para cada produto:
 //   image: foto em /static/img/ (se vazio, aparece o emoji)
-//   cutout: foto do produto SEM fundo (PNG transparente) para mostrar na mesa
-//   glb / usdz: modelo 3D em /static/models/ (se vazio, usa o modelo de teste)
-//   arScale: tamanho no cartão da mesa (1 = largura do cartão; padrão 0.6)
+//   cutout: foto do produto sem fundo, usada nas experiências de câmera/AR
 const PRODUCTS = [
   { 
     id: "classico", 
@@ -17,9 +11,17 @@ const PRODUCTS = [
     emoji: "🍔", 
     tint: "#fde7d3", 
     image: "/static/images/images (1).jpg", 
-    cutout: "", // DEIXE VAZIO para não forçar o modo foto 2D
-    glb: "/static/models/hamburguer-teste.glb", // <--- ADICIONE O MODELO 3D AQUI
-    usdz: "" 
+    cutout: "/static/images/classico-recorte.png"
   },
-  // ... demais produtos
+  {
+    id: "pizza",
+    category: "Pizzas",
+    name: "Pizza de Pepperoni",
+    desc: "Pizza de pepperoni.",
+    price: "Preço a definir",
+    emoji: "🍕",
+    tint: "#f8e6ca",
+    image: "/static/images/pizza-pepperoni.webp",
+    cutout: "/static/images/pizza-pepperoni-cutout.png"
+  }
 ];

@@ -3,62 +3,91 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Cardápio digital em 3D. Veja o prato em realidade aumentada na sua mesa.">
-  <title>Cardápio 3D</title>
+  <meta name="theme-color" content="#f6f4ef">
+  <meta name="description" content="Conheça uma nova forma de apresentar os produtos do seu estabelecimento com um catálogo digital interativo.">
+  <title>Menu em foco — catálogo interativo</title>
 
-  <!-- Versão fixa do model-viewer (oficial do Google) -->
-  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
-  <link rel="stylesheet" href="/static/style.css?v=10">
+  <link rel="stylesheet" href="/static/style.css?v=14">
 </head>
 
 <body>
   <main class="page">
 
     <header class="topbar">
-      <p class="eyebrow">CARDÁPIO</p>
-      <h1>Escolha seu pedido.</h1>
-      <p class="subtitle">Toque em um item para ver em 3D e colocar na sua mesa.</p>
+      <div class="brandbar">
+        <a class="brand" href="/" aria-label="Menu em foco, início">
+          <span class="brand-mark" aria-hidden="true">m.</span>
+          <span class="brand-name">menu <span>em foco</span></span>
+        </a>
+        <span class="demo-label"><span class="status-dot" aria-hidden="true"></span> Catálogo demonstrativo</span>
+      </div>
+
+      <div class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="eyebrow-line"></span> UMA NOVA EXPERIÊNCIA PARA SEU CARDÁPIO</p>
+          <h1>Seu próximo pedido começa <span>pelos olhos.</span></h1>
+          <p class="subtitle">Uma vitrine digital para apresentar seus produtos com fotos que dão água na boca e uma experiência fácil de explorar.</p>
+          <a class="hero-cta" href="#catalogo">Explore a demonstração <span aria-hidden="true">↓</span></a>
+          <div class="hero-note">
+            <span class="hero-note-icon" aria-hidden="true">✦</span>
+            <span>Uma prévia de como o seu estabelecimento pode aparecer.</span>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="hero-image-wrap">
+            <img src="/static/images/classico-recorte.png" alt="Hambúrguer Clássico recortado para destacar apenas o produto">
+            <span class="hero-image-stamp">FEITO PARA<br>ABRIR O APETITE</span>
+          </div>
+          <div class="hero-float-card">
+            <span class="hero-float-icon" aria-hidden="true">↗</span>
+            <span><strong>Mais que um cardápio</strong><small>Uma experiência para explorar</small></span>
+          </div>
+          <span class="hero-orbit hero-orbit-one" aria-hidden="true"></span>
+          <span class="hero-orbit hero-orbit-two" aria-hidden="true"></span>
+        </div>
+      </div>
     </header>
 
-    <nav class="categories" id="categories" aria-label="Categorias"></nav>
+    <section class="catalog" id="catalogo" aria-labelledby="catalog-title">
+      <div class="catalog-heading">
+        <div>
+          <p class="section-kicker">UMA PRÉVIA INTERATIVA <span aria-hidden="true">✳</span></p>
+          <h2 id="catalog-title">Um gostinho do que é possível.</h2>
+        </div>
+        <p class="catalog-intro">Este é um exemplo de apresentação. No seu catálogo, entram a identidade, o cardápio e os produtos do seu estabelecimento.</p>
+      </div>
 
-    <section class="grid" id="grid" aria-live="polite"></section>
+      <div class="catalog-layout">
+        <div class="catalog-products">
+          <nav class="categories" id="categories" aria-label="Categorias"></nav>
+          <section class="grid" id="grid" aria-label="Produtos de demonstração" aria-live="polite"></section>
+        </div>
 
-    <footer>Cardápio em realidade aumentada</footer>
+        <aside class="partner-card">
+          <span class="partner-kicker">PARA SEU ESTABELECIMENTO</span>
+          <h3>Seu negócio.<br>Sua identidade.</h3>
+          <p>Uma vitrine pensada para destacar o que torna seus produtos únicos.</p>
+          <div class="partner-divider"></div>
+          <ul>
+            <li><span aria-hidden="true">✓</span> Sua marca e suas cores</li>
+            <li><span aria-hidden="true">✓</span> Seus produtos e descrições</li>
+            <li><span aria-hidden="true">✓</span> Uma experiência fácil de explorar</li>
+          </ul>
+          <span class="partner-foot"><span class="status-dot" aria-hidden="true"></span> Esta página é uma demonstração</span>
+        </aside>
+      </div>
+    </section>
+
+    <footer><span class="footer-mark">menu <span>em foco</span></span><span>Uma nova forma de apresentar o seu cardápio.</span></footer>
   </main>
 
-  <!-- Detalhe do produto: 3D + AR -->
+  <!-- Detalhe do produto -->
   <dialog id="product-dialog" class="sheet" aria-labelledby="product-name">
     <button class="sheet-close" id="sheet-close" type="button" aria-label="Fechar">×</button>
 
     <div class="sheet-grid">
       <div class="viewer-stage">
-        <model-viewer
-          id="product-viewer"
-          alt="Modelo 3D do produto"
-          ar
-          ar-modes="webxr scene-viewer quick-look"
-          ar-placement="floor"
-          ar-scale="auto"
-          xr-environment
-          camera-controls
-          touch-action="pan-y"
-          auto-rotate
-          shadow-intensity="1"
-          shadow-softness="0.8"
-          exposure="1"
-          environment-image="neutral"
-          camera-orbit="0deg 75deg auto"
-          reveal="auto">
-
-          <button slot="ar-button" hidden type="button"></button>
-
-          <div slot="progress-bar" class="loading">
-            <span class="spinner"></span>
-            Carregando modelo 3D...
-          </div>
-        </model-viewer>
-
         <div class="photo-stage" id="photo-stage" hidden>
           <img id="stage-img" alt="" hidden>
           <span id="stage-emoji" class="stage-emoji" aria-hidden="true" hidden></span>
@@ -73,25 +102,15 @@
         <div class="price" id="product-price"></div>
 
         <a class="primary-link" id="camera-link" href="/camera">Ver na minha mesa</a>
-        <a class="secondary-link" id="marker-link" href="/ar">Usar o cartão da mesa (fica mais fixo)</a>
+        <a class="secondary-link" id="marker-link" href="/ar">Ver com cartão de mesa</a>
+        <p class="ar-tip"><strong>Veja na mesa:</strong> posicione o recorte real do pedido pela câmera. Para mostrar um giro 360° realista, são necessárias fotos do mesmo produto por outros ângulos.</p>
 
-        <p class="hint" id="viewer-hint">Arraste para girar · Use dois dedos para aproximar</p>
-
-        <p class="ar-tip">
-          <strong>Como funciona:</strong> toque em “Ver na minha mesa” e permita a câmera.
-          O prato aparece na tela, na direção para onde você apontar. Arraste para girar,
-          use dois dedos para aproximar, afastar e mover.
-        </p>
-
-        <div id="model-error" class="model-error" role="alert" hidden>
-          Não foi possível carregar o modelo 3D. Confira a conexão e tente novamente.
-        </div>
       </div>
     </div>
   </dialog>
 
 
-  <script src="/static/products.js?v=10"></script>
-  <script src="/static/app.js?v=10"></script>
+  <script src="/static/products.js?v=18"></script>
+  <script src="/static/app.js?v=18"></script>
 </body>
 </html>

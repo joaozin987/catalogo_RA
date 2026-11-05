@@ -36,13 +36,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (photoMode) {
     // Modo Foto 2D (Recorte na mesa)
     viewer.style.display = "none";
-    spinButton.hidden = true;
+    spinButton.hidden = false;
+    spinButton.textContent = "Girar ↻";
+    spinButton.setAttribute("aria-label", "Girar a imagem 15 graus");
     layer.hidden = false;
     photo.classList.toggle("is-raw", !product.cutout);
     photoImg.alt = product.name;
     photoImg.src = photoSrc;
     photoImg.addEventListener("error", () => showError("Não foi possível carregar a imagem do produto."));
-    status.textContent = "Arraste para mover · Pinça para ajustar o tamanho · Gire com dois dedos";
+    status.textContent = "Foto recortada do pedido · Arraste para posicionar · Toque em Girar imagem para inclinar";
 
     const pointers = new Map();
     let base = { ...state };
@@ -102,6 +104,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       applyPhoto();
     }, { passive: false });
 
+    spinButton.addEventListener("click", () => {
+      state.r += Math.PI / 12;
+      applyPhoto();
+    });
+
     $("btn-reset").addEventListener("click", () => {
       Object.assign(state, { x: 0, y: 0, s: 1, r: 0 });
       applyPhoto();
@@ -117,8 +124,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     viewer.style.display = "block";
     layer.hidden = true;
     spinButton.hidden = false;
+    $("btn-reset").setAttribute("aria-label", "Centralizar e restaurar o modelo");
 
-    viewer.alt = "Modelo 3D de " + product.name;
+    viewer.alt = "Modelo 3D aproximado de " + product.name;
     viewer.src = product.glb;
     if (product.usdz) {
       viewer.iosSrc = product.usdz;
@@ -133,14 +141,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     viewer.setAttribute("shadow-softness", "1");
     viewer.setAttribute("exposure", "1.2");
 
-    status.textContent = "Gire o modelo na tela ou clique em AR para ver na mesa!";
+    status.textContent = "Arraste com um dedo para dar a volta 360° e ver o modelo por outros ângulos.";
 
     viewer.addEventListener("error", () => {
       showError("Não foi possível carregar o modelo 3D (.glb). Verifique o caminho do ficheiro.");
     });
 
     $("btn-reset").addEventListener("click", () => {
-      viewer.cameraOrbit = "0deg 78deg 170%";
+      viewer.cameraOrbit = "0deg 78deg 120%";
       viewer.cameraTarget = "auto auto auto";
       viewer.fieldOfView = "auto";
     });

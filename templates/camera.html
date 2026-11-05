@@ -6,7 +6,7 @@
   <title>Ver na minha mesa</title>
 
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
-  <link rel="stylesheet" href="/static/camera.css?v=10">
+  <link rel="stylesheet" href="/static/camera.css?v=13">
 </head>
 
 <body>
@@ -16,7 +16,7 @@
   <!-- Produto 3D por cima da câmera -->
   <model-viewer
     id="product"
-    alt="Modelo 3D do produto"
+    alt="Modelo 3D aproximado do produto. Arraste para ver por outros ângulos."
     camera-controls
     touch-action="none"
     interaction-prompt="none"
@@ -24,7 +24,7 @@
     shadow-softness="1"
     exposure="1.1"
     environment-image="neutral"
-    camera-orbit="0deg 78deg 170%"
+    camera-orbit="0deg 78deg 120%"
     min-camera-orbit="-Infinity 20deg 25%"
     max-camera-orbit="Infinity 95deg 450%"
     loading="eager"
@@ -51,13 +51,13 @@
         <span id="cam-price"></span>
       </div>
       <div class="card-actions">
-        <button type="button" id="btn-spin" aria-pressed="false">Girar</button>
-        <button type="button" id="btn-reset">Centralizar</button>
+        <button type="button" id="btn-spin" aria-label="Girar a imagem 15 graus">Girar imagem ↻</button>
+        <button type="button" id="btn-reset" aria-label="Centralizar e restaurar a foto">Centralizar</button>
       </div>
     </div>
   </div>
 
-  <script src="/static/products.js?v=10"></script>
-  <script src="/static/camera.js?v=10"></script>
+  <script src="/static/products.js?v=18"></script>
+  <script src="/static/camera.js?v=15"></script>
 </body>
 </html>
