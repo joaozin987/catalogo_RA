@@ -18,6 +18,10 @@ de editar. Priorize segurança e integridade, correção, testes e clareza.
   DEBUG desligado por padrão. Não executar migrations; `DATABASES = {}`.
 - `backend/catalog/`: views de leitura e `products.json`, catálogo da API
   `/api/products`. API e HTML usam `Cache-Control: no-store`.
+- `backend/laboratory/` e `frontend/src/views/LaboratoryView.vue`: experimento
+  opcional de imagem para GLB. Habilitar com `FOOD_LAB_ENABLED=1` somente em
+  loopback. O Hunyuan3D 2.1 roda em ambiente separado, sem dependências novas
+  para o Catálogo RA. Ver `docs/LABORATORIO-3D.md`.
 - `backend/tests/`: testes Django sem acesso a banco.
 - `frontend/src/views/`: componentes Vue do catálogo, câmera e AR.
   `controllers/`: adaptação dos gestos/câmera/AR com limpeza ao desmontar.
@@ -35,7 +39,8 @@ de editar. Priorize segurança e integridade, correção, testes e clareza.
   conforme a tarefa. Não editar `.git/`, `.venv/`, `node_modules/`,
   `frontend/dist/` ou caches como solução. Preservar o legado até autorização
   para retirada; mudanças no catálogo precisam manter a paridade durante a transição.
-- Não há banco, login, uploads ou CI. FastAPI/Uvicorn permanecem em
+- O upload de imagem é exclusivo do laboratório local. Não há banco, login
+  ou CI. FastAPI/Uvicorn permanecem em
   `requirements.txt` para retorno ao legado; não são o backend migrado.
 
 ## Comandos (PowerShell, na raiz)

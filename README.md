@@ -58,6 +58,12 @@ O Vite encaminha `/api` e `/static` para Django na porta 8000, evitando a
 necessidade de CORS. `vite preview` isolado não fornece esse backend; para
 validar o build integrado, use Django conforme a seção anterior.
 
+## Food Reconstruction Lab
+
+O [roteiro do laboratório](docs/LABORATORIO-3D.md) explica como habilitar
+`/laboratorio-3d`, conectar o Hunyuan3D 2.1 local e avaliar a reconstrução
+do Clássico. O laboratório é opcional e separado das rotas do consumidor.
+
 ## Testes e verificações
 
 Antes de cada funcionalidade: escrever o teste, confirmar a falha pelo motivo

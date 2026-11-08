@@ -92,6 +92,11 @@ involuntária. Não publicar detalhes exploráveis antes da coordenação.
   `products.js` também contém constantes de modelos de demonstração externos.
   Validar protocolo/origem, tamanho e formato de novos recursos; não aceitar
   URLs ou HTML arbitrários de entrada não confiável.
+- Habilitar o laboratório 3D apenas em loopback, em máquina de uso confiável.
+  O Django usa CSRF e encaminha imagens de até 8 MiB somente à API local
+  Hunyuan3D em `127.0.0.1:8081`. O worker roda em ambiente separado, pode
+  persistir artefatos no cache próprio e deve receber apenas imagens autorizadas.
+  O [roteiro do laboratório](docs/LABORATORIO-3D.md) registra os limites.
 - Manter segredos fora de código, testes, logs e commits. `.env` e `.venv/`
   estão ignorados, o que não protege arquivos já rastreados. Usar placeholders
   nos exemplos e menor privilégio em credenciais e processos.

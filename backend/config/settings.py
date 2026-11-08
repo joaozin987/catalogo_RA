@@ -6,6 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 PROJECT_DIR = BASE_DIR.parent
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY") or secrets.token_urlsafe(64)
 DEBUG = os.environ.get("DJANGO_DEBUG", "0") == "1"
+FOOD_LAB_ENABLED = os.environ.get("FOOD_LAB_ENABLED", "0") == "1"
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "[::1]"]
 ROOT_URLCONF = "config.urls"
 INSTALLED_APPS = ["django.contrib.staticfiles"]

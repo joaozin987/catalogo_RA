@@ -26,3 +26,33 @@ it("renderiza catálogo recebido do Django", async () => {
   expect(wrapper.find("[role=alert]").exists()).toBe(false);
   wrapper.unmount();
 });
+
+it("compara a imagem enviada com o GLB sem consultar o catálogo", async () => {
+  window.history.replaceState({}, "", "/laboratorio-3d");
+  vi.spyOn(document, "cookie", "get").mockReturnValue("csrftoken=test-token");
+  const original = new Blob(["photo"], { type: "image/png" });
+  const model = new Blob(["model"], { type: "model/gltf-binary" });
+  vi.stubGlobal("URL", {
+    createObjectURL: vi.fn().mockReturnValueOnce("blob:original").mockReturnValueOnce("blob:model"),
+    revokeObjectURL: vi.fn(),
+  });
+  vi.stubGlobal("fetch", vi.fn()
+    .mockResolvedValueOnce({ ok: true, blob: async () => original })
+    .mockResolvedValueOnce({ ok: true, blob: async () => model }));
+  const wrapper = mount(App);
+  await wrapper.get("[data-sample]").trigger("click");
+  await settle();
+  expect(wrapper.get("img").attributes("src")).toBe("blob:original");
+  await wrapper.get("form").trigger("submit");
+  await settle();
+  expect(fetch.mock.calls.map(([url]) => url)).toEqual([
+    "/static/images/classico-recorte.png", "/api/laboratorio-3d/reconstruir",
+  ]);
+  expect(fetch.mock.calls[1][1]).toMatchObject({
+    body: original,
+    headers: { "Content-Type": "image/png", "X-CSRFToken": "test-token" },
+  });
+  expect(wrapper.get("model-viewer").attributes("src")).toBe("blob:model");
+  wrapper.unmount();
+  expect(URL.revokeObjectURL.mock.calls.flat()).toEqual(["blob:original", "blob:model"]);
+});

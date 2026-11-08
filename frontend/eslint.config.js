@@ -14,6 +14,7 @@ export default [
     languageOptions: {
       globals: Object.fromEntries([
         "window", "document", "navigator", "fetch", "Image", "URLSearchParams",
+        "AbortController", "Blob", "URL",
         "setTimeout", "clearTimeout", "HTMLDialogElement", "HTMLMediaElement", "Event",
       ].map((name) => [name, "readonly"])),
     },

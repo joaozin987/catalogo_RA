@@ -5,6 +5,7 @@ import { loadLibraries } from "./libraries.js";
 import CatalogView from "./views/CatalogView.vue";
 import CameraView from "./views/CameraView.vue";
 import ArView from "./views/ArView.vue";
+import LaboratoryView from "./views/LaboratoryView.vue";
 
 const products = ref([]);
 const loading = ref(true);
@@ -27,12 +28,15 @@ async function load() {
     if (!disposed) loading.value = false;
   }
 }
-onMounted(load);
+onMounted(() => {
+  if (route !== "/laboratorio-3d") load();
+});
 onBeforeUnmount(() => { disposed = true; });
 </script>
 
 <template>
-  <main v-if="loading" class="app-message" role="status">Carregando cardápio...</main>
+  <LaboratoryView v-if="route === '/laboratorio-3d'" />
+  <main v-else-if="loading" class="app-message" role="status">Carregando cardápio...</main>
   <main v-else-if="error" class="app-message">
     <p role="alert">{{ error }}</p>
     <button type="button" @click="load">Tentar novamente</button>
