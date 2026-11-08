@@ -8,8 +8,19 @@
     "emoji": "🍔",
     "tint": "#fde7d3",
     "image": "/static/images/images (1).jpg",
-    "cutout": "",
+    "cutout": "/static/images/classico-recorte.png",
     "glb": "/static/models/hamburguer-teste.glb",
     "usdz": ""
+  },
+  {
+    "id": "pizza",
+    "category": "Pizzas",
+    "name": "Pizza de Pepperoni",
+    "desc": "Pizza de pepperoni.",
+    "price": "Preço a definir",
+    "emoji": "🍕",
+    "tint": "#f8e6ca",
+    "image": "/static/images/pizza-pepperoni.webp",
+    "cutout": "/static/images/pizza-pepperoni-cutout.png"
   }
 ]

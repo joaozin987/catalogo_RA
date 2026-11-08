@@ -27,7 +27,7 @@ async function openProduct(product) {
     <header class="topbar">
       <p class="eyebrow">CARDÁPIO</p>
       <h1>Escolha seu pedido.</h1>
-      <p class="subtitle">Toque em um item para ver em 3D e colocar na sua mesa.</p>
+      <p class="subtitle">Toque em um item para ver os detalhes e colocar na sua mesa.</p>
     </header>
     <nav class="categories" aria-label="Categorias">
       <button v-for="name in categories" :key="name" class="chip" type="button"
@@ -38,12 +38,12 @@ async function openProduct(product) {
         <div class="card-media" :style="{ background: product.tint || '#f1f1f1' }">
           <img v-if="product.image" :src="product.image" :alt="product.name" loading="lazy">
           <span v-else class="card-emoji" aria-hidden="true">{{ product.emoji || '🍽️' }}</span>
-          <span class="badge">3D</span>
+          <span v-if="product.glb" class="badge">3D</span>
         </div>
         <div class="card-body">
           <h3 class="card-title">{{ product.name }}</h3>
           <p class="card-desc">{{ product.desc }}</p>
-          <div class="card-foot"><span class="card-price">{{ product.price }}</span><span class="card-cta">Ver em 3D</span></div>
+          <div class="card-foot"><span class="card-price">{{ product.price }}</span><span class="card-cta">{{ product.glb ? "Ver em 3D" : "Ver detalhes" }}</span></div>
         </div>
       </button>
     </section>

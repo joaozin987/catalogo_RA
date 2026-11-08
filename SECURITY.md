@@ -93,9 +93,10 @@ involuntária. Não publicar detalhes exploráveis antes da coordenação.
   Validar protocolo/origem, tamanho e formato de novos recursos; não aceitar
   URLs ou HTML arbitrários de entrada não confiável.
 - Habilitar o laboratório 3D apenas em loopback, em máquina de uso confiável.
-  O Django usa CSRF e encaminha imagens de até 8 MiB somente à API local
-  Hunyuan3D em `127.0.0.1:8081`. O worker roda em ambiente separado, pode
-  persistir artefatos no cache próprio e deve receber apenas imagens autorizadas.
+  O Django usa CSRF, limita imagens a 8 MiB e chama o CLI local do Stable Fast
+  3D com caminhos configurados pelo operador. Use apenas um checkout e um
+  ambiente Python confiáveis. O diretório temporário guarda a imagem e o
+  resultado durante a geração e é removido ao final da requisição.
   O [roteiro do laboratório](docs/LABORATORIO-3D.md) registra os limites.
 - Manter segredos fora de código, testes, logs e commits. `.env` e `.venv/`
   estão ignorados, o que não protege arquivos já rastreados. Usar placeholders

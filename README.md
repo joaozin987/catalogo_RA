@@ -115,7 +115,7 @@ validar o build integrado, use Django conforme a seção anterior.
 ## Food Reconstruction Lab
 
 O [roteiro do laboratório](docs/LABORATORIO-3D.md) explica como habilitar
-`/laboratorio-3d`, conectar o Hunyuan3D 2.1 local e avaliar a reconstrução
+`/laboratorio-3d`, configurar o Stable Fast 3D local e avaliar a reconstrução
 do Clássico. O laboratório é opcional e separado das rotas do consumidor.
 
 ## Testes e verificações

@@ -1,31 +1,39 @@
 # Food Reconstruction Lab
 
 O primeiro experimento usa `static/images/classico-recorte.png`. O laboratório
-envia os bytes da foto ao Hunyuan3D 2.1 local e exibe o GLB experimental ao lado
+passa a foto ao Stable Fast 3D local e exibe o GLB experimental ao lado
 da imagem de referência. A rotação e o zoom usam o model-viewer já presente no
 projeto. As faces ocultas pela foto são inferidas e precisam de revisão humana.
 
 ## Rodar localmente
 
-1. Prepare o [ambiente oficial do Hunyuan3D 2.1](https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1#install-requirements)
-   separadamente, após autorização para instalação e download dos pesos. A
-   Tencent informa 29 GB de VRAM para forma e textura juntas no fluxo padrão.
-   Verifique a [licença e seus limites territoriais](https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1/blob/main/LICENSE)
-   antes de usar ou distribuir o modelo.
-2. Na raiz do checkout do Hunyuan3D 2.1, execute o servidor oficial com o
-   Python do ambiente de inferência. A integração usa o
-   [endpoint `POST /generate`](https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1/blob/main/API_DOCUMENTATION.md#available-endpoints).
+1. Prepare um checkout confiável e um ambiente separado seguindo o
+   [guia oficial do Stable Fast 3D](https://github.com/Stability-AI/stable-fast-3d#getting-started).
+   O fabricante indica cerca de 6 GB de VRAM no fluxo padrão com GPU para
+   uma imagem e documenta CPU. O suporte ao Windows é experimental.
+   A instalação e o download dependem da autorização prevista no projeto.
+2. Aceite os termos no [repositório oficial de pesos](https://huggingface.co/stabilityai/stable-fast-3d)
+   e coloque `config.yaml` e `model.safetensors` no mesmo diretório local.
+   Antes de abrir o laboratório, rode o CLI uma vez no ambiente separado
+   com a imagem de demonstração oficial para preparar o cache do removedor
+   de fundo e confirmar que o motor exporta `0/mesh.glb`.
 
    ```powershell
-   python api_server.py --host 127.0.0.1 --port 8081 --limit-model-concurrency 1
+   $env:SF3D_USE_CPU = "1"
+   python run.py demo_files/examples/chair1.png --device cpu --pretrained-model C:/caminho/pesos-sf3d --output-dir output
    ```
 
-3. Em outro terminal, na raiz do Catálogo RA, compile o frontend e inicie o
-   Django.
+3. Na raiz do Catálogo RA, configure os caminhos absolutos para o checkout,
+   o Python do ambiente de inferência e os pesos. Use `cpu` para este
+   computador ou `cuda` em uma máquina com PyTorch e NVIDIA compatíveis.
 
    ```powershell
    npm --prefix frontend run build
    $env:FOOD_LAB_ENABLED = "1"
+   $env:FOOD_LAB_SF3D_DIR = "C:/caminho/stable-fast-3d"
+   $env:FOOD_LAB_SF3D_PYTHON = "C:/caminho/ambiente-sf3d/Scripts/python.exe"
+   $env:FOOD_LAB_SF3D_WEIGHTS = "C:/caminho/pesos-sf3d"
+   $env:FOOD_LAB_SF3D_DEVICE = "cpu"
    .\.venv\Scripts\python.exe backend/manage.py runserver 127.0.0.1:8000 --insecure
    ```
 
@@ -36,27 +44,28 @@ projeto. As faces ocultas pela foto são inferidas e precisam de revisão humana
    baixe o resultado experimental para conservá-lo após fechar a página.
 
 O Django verifica tipo e assinatura do arquivo. A decodificação e a preparação
-da imagem acontecem no worker. A chamada local usa semente 42, pede textura
-e limita o GLB recebido a 25 MiB. O Django verifica o cabeçalho GLB 2 e a
-presença de textura de cor embutida para rejeitar o retorno sem textura que
-o worker pode produzir quando a etapa de pintura falha. O limite é de
+da imagem acontecem no CLI oficial. A integração usa o atlas padrão de
+1024 pixels e limita o GLB a 25 MiB. O Django verifica o cabeçalho GLB 2 e a
+presença de textura de cor embutida. O limite é de
 transferência e não comprova desempenho no celular. O laboratório aceita
-uma geração por vez no processo Django. Se a conexão encerrar durante a
-inferência, o worker pode continuar a geração. O Django não grava imagens ou
-GLBs em disco. O cache do Hunyuan3D pode manter malhas, texturas e logs.
+uma geração por vez no processo Django e encerra o CLI após 10 minutos.
+Se a conexão encerrar antes, o processo pode continuar até concluir ou
+atingir o limite. A imagem e a saída ficam em um diretório temporário
+removido ao fim da requisição. Uma interrupção abrupta do servidor pode
+deixar arquivos temporários para limpeza posterior.
 
 Use somente em loopback, sem proxy reverso, túnel ou exposição à rede. A
-integração manda as fotos apenas ao worker local. O navegador carrega o
+integração passa as fotos ao CLI local. O navegador carrega o
 visualizador pela mesma CDN do catálogo. Para desativar, reinicie o Django
-com `FOOD_LAB_ENABLED=0` e encerre o worker.
+com `FOOD_LAB_ENABLED=0`.
 
 ## Registro do experimento
 
 | Produto | Motor | Estado |
 | --- | --- | --- |
-| Clássico | Hunyuan3D 2.1 | Integração coberta com resposta simulada. Geração real e avaliação visual pendentes. |
+| Clássico | Stable Fast 3D | Integração coberta com exportação simulada. Geração real e avaliação visual pendentes. |
 
-Ao executar com GPU, registre a revisão e os pesos do motor, duração,
+Ao executar, registre o dispositivo de inferência, a revisão e os pesos do motor, duração,
 tamanho do GLB, dispositivo e tempo de carregamento. Compare a frente com
 o PNG e inspecione laterais, topo e traseira com uma volta completa. Avalie
 cores, ingredientes, proporções, continuidade da textura e volume. Uma

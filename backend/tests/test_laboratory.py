@@ -1,8 +1,8 @@
-import base64
 import json
 import struct
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest.mock import patch
-from urllib.error import URLError
 
 from django.conf import settings
 from django.test import Client, SimpleTestCase, override_settings
@@ -19,6 +19,21 @@ def glb(document):
 
 @override_settings(FOOD_LAB_ENABLED=True)
 class LaboratoryTests(SimpleTestCase):
+    def setUp(self):
+        folder = TemporaryDirectory(dir=settings.BASE_DIR)
+        self.addCleanup(folder.cleanup)
+        self.root = Path(folder.name)
+        for name in ("run.py", "python.exe", "config.yaml", "model.safetensors"):
+            (self.root / name).touch()
+        config = override_settings(
+            FOOD_LAB_SF3D_DIR=str(self.root),
+            FOOD_LAB_SF3D_PYTHON=str(self.root / "python.exe"),
+            FOOD_LAB_SF3D_WEIGHTS=str(self.root),
+            FOOD_LAB_SF3D_DEVICE="cpu",
+        )
+        config.enable()
+        self.addCleanup(config.disable)
+
     def submit(self, image=PNG, content_type="image/png", **headers):
         return self.client.post(URL, image, content_type=content_type, **headers)
 
@@ -38,35 +53,47 @@ class LaboratoryTests(SimpleTestCase):
         self.assertEqual(self.submit(content_type="image/jpeg").status_code, 400)
         self.assertEqual(self.submit(b"x" * (8 * 1024 * 1024 + 1)).status_code, 413)
 
-    @patch("laboratory.reconstruction.OPENER")
-    def test_sends_original_bytes_to_local_model_and_returns_textured_glb(self, opener):
+    @patch("laboratory.reconstruction.subprocess.run")
+    def test_sends_original_bytes_to_local_model_and_returns_textured_glb(self, run):
         model = glb({
             "materials": [{"pbrMetallicRoughness": {"baseColorTexture": {"index": 0}}}],
             "textures": [{"source": 0}],
             "images": [{"bufferView": 0, "mimeType": "image/png"}],
         })
-        opener.open.return_value.__enter__.return_value.read.return_value = model
+        def export(command, **options):
+            self.assertEqual(command[:2], [str(self.root / "python.exe"), str(self.root / "run.py")])
+            source = Path(command[2])
+            self.assertEqual(source.read_bytes(), PNG)
+            self.assertEqual(source.suffix, ".png")
+            self.assertEqual(command[command.index("--device") + 1], "cpu")
+            self.assertEqual(options["env"]["SF3D_USE_CPU"], "1")
+            self.assertTrue(options["check"])
+            output = Path(command[command.index("--output-dir") + 1]) / "0"
+            output.mkdir(parents=True)
+            (output / "mesh.glb").write_bytes(model)
+
+        run.side_effect = export
         response = self.submit()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, model)
         self.assertEqual(response.headers["Cache-Control"], "no-store")
         self.assertEqual(response.headers["Content-Type"], "model/gltf-binary")
-        request = opener.open.call_args.args[0]
-        self.assertEqual(request.full_url, "http://127.0.0.1:8081/generate")
-        payload = json.loads(request.data)
-        self.assertEqual(base64.b64decode(payload["image"]), PNG)
-        self.assertTrue(payload["texture"])
+        self.assertFalse(Path(run.call_args.args[0][2]).exists())
 
-    @patch("laboratory.reconstruction.OPENER")
-    def test_rejects_untextured_or_external_results_and_handles_worker_failure(self, opener):
-        result = opener.open.return_value.__enter__.return_value
+    @patch("laboratory.reconstruction.subprocess.run")
+    def test_rejects_untextured_or_external_results_and_handles_worker_failure(self, run):
         for model in (b"bad", glb({}), glb({
             "materials": [{"pbrMetallicRoughness": {"baseColorTexture": {"index": 0}}}],
             "images": [{"uri": "https://example.invalid/texture.png"}],
         })):
-            result.read.return_value = model
+            def export(command, **options):
+                output = Path(command[command.index("--output-dir") + 1]) / "0"
+                output.mkdir(parents=True)
+                (output / "mesh.glb").write_bytes(model)
+
+            run.side_effect = export
             self.assertEqual(self.submit().status_code, 502)
-        opener.open.side_effect = URLError("internal detail")
+        run.side_effect = OSError("internal detail")
         response = self.submit()
         self.assertEqual(response.status_code, 503)
         self.assertNotContains(response, "internal detail", status_code=503)

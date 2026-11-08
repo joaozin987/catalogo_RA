@@ -70,7 +70,7 @@ async function generate() {
   if (!image || status.value) return;
   error.value = "";
   clearModel();
-  status.value = "Gerando geometria e textura no Hunyuan3D 2.1. Isso pode levar alguns minutos.";
+  status.value = "Gerando geometria e textura no Stable Fast 3D. Isso pode levar alguns minutos.";
   try {
     const csrf = document.cookie.split("; ").find((item) => item.startsWith("csrftoken="));
     if (!csrf) throw new Error("Reabra o laboratório pelo servidor Django local e tente novamente.");
@@ -109,7 +109,7 @@ onBeforeUnmount(() => {
     <header>
       <p>Catálogo RA · Experimento 01</p>
       <h1>Food Reconstruction Lab</h1>
-      <p>Compare a foto original com a geometria e a textura geradas pelo Hunyuan3D 2.1 local.</p>
+      <p>Compare a foto original com a geometria e a textura geradas pelo Stable Fast 3D local.</p>
     </header>
     <form @submit.prevent="generate">
       <fieldset :disabled="Boolean(status)">

@@ -1,7 +1,6 @@
 import logging
-from http.client import HTTPException
+from subprocess import CalledProcessError, TimeoutExpired  # nosec B404
 from threading import Lock
-from urllib.error import HTTPError
 
 from django.conf import settings
 from django.http import Http404, HttpResponse, JsonResponse
@@ -47,14 +46,17 @@ def generate(request):
     if not INFERENCE.acquire(blocking=False):
         return JsonResponse({"error": "Já há uma geração em andamento."}, status=409)
     try:
-        model = reconstruct(image)
-    except (HTTPError, HTTPException, ValueError, RecursionError):
+        model = reconstruct(image, request.content_type.split("/")[1])
+    except (CalledProcessError, ValueError, RecursionError):
         LOGGER.warning("A reconstrução local não retornou um GLB texturizado aceito.")
         return JsonResponse({"error": "A geração falhou ou retornou um GLB sem textura ou acima de 25 MiB."},
                             status=502)
+    except TimeoutExpired:
+        LOGGER.warning("O Stable Fast 3D excedeu o tempo de espera.")
+        return JsonResponse({"error": "A geração excedeu o limite de 10 minutos."}, status=504)
     except OSError:
-        LOGGER.warning("O serviço de reconstrução local está indisponível ou excedeu o tempo de espera.")
-        return JsonResponse({"error": "Verifique o serviço Hunyuan3D local na porta 8081 ou tente novamente."},
+        LOGGER.warning("O ambiente local do Stable Fast 3D está indisponível.")
+        return JsonResponse({"error": "Confira a configuração local do Stable Fast 3D."},
                             status=503)
     finally:
         INFERENCE.release()

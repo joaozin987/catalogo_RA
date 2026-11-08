@@ -10,11 +10,12 @@ class CatalogApiTests(SimpleTestCase):
         response = self.client.get("/api/products")
         self.assertEqual(response.status_code, 200)
         products = response.json()
-        self.assertEqual(len(products), 1)
+        self.assertEqual([product["id"] for product in products], ["classico", "pizza"])
         self.assertEqual(products[0]["id"], "classico")
         self.assertEqual(products[0]["name"], "Clássico")
         self.assertEqual(products[0]["price"], "R$ 29,90")
         self.assertEqual(products[0]["glb"], "/static/models/hamburguer-teste.glb")
+        self.assertEqual(products[1]["name"], "Pizza de Pepperoni")
         self.assertEqual(response.headers["Cache-Control"], "no-store")
 
     def test_catalog_is_read_only(self):

@@ -20,7 +20,7 @@ de editar. Priorize segurança e integridade, correção, testes e clareza.
   `/api/products`. API e HTML usam `Cache-Control: no-store`.
 - `backend/laboratory/` e `frontend/src/views/LaboratoryView.vue`: experimento
   opcional de imagem para GLB. Habilitar com `FOOD_LAB_ENABLED=1` somente em
-  loopback. O Hunyuan3D 2.1 roda em ambiente separado, sem dependências novas
+  loopback. O Stable Fast 3D roda em ambiente separado, sem dependências novas
   para o Catálogo RA. Ver `docs/LABORATORIO-3D.md`.
 - `backend/tests/`: testes Django sem acesso a banco.
 - `frontend/src/views/`: componentes Vue do catálogo, câmera e AR.

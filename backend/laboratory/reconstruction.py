@@ -1,35 +1,50 @@
-import base64
 import json
+import os
 import struct
-from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
+import subprocess  # nosec B404
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+from django.conf import settings
 
 MAX_GLB_BYTES = 25 * 1024 * 1024
 
 
-class NoRedirect(HTTPRedirectHandler):
-    def redirect_request(self, req, fp, code, msg, headers, newurl):
-        return None
+def reconstruct(image, suffix):
+    directory = Path(settings.FOOD_LAB_SF3D_DIR)
+    python = Path(settings.FOOD_LAB_SF3D_PYTHON)
+    weights = Path(settings.FOOD_LAB_SF3D_WEIGHTS)
+    device = settings.FOOD_LAB_SF3D_DEVICE
+    if not all(path.is_absolute() for path in (directory, python, weights)):
+        raise OSError("SF3D paths must be absolute")
+    script = directory / "run.py"
+    required_files = (script, python, weights / "config.yaml", weights / "model.safetensors")
+    if device not in {"cpu", "cuda", "mps"} or not all(path.is_file() for path in required_files):
+        raise OSError("SF3D installation is incomplete")
 
-
-OPENER = build_opener(ProxyHandler({}), NoRedirect())
-
-
-def reconstruct(image):
-    payload = {
-        "image": base64.b64encode(image).decode("ascii"),
-        "texture": True,
-        "type": "glb",
-        "seed": 42,
-        "num_inference_steps": 30,
-        "face_count": 40000,
+    environment = {
+        **os.environ,
+        "HF_HUB_OFFLINE": "1",
+        "SF3D_USE_CPU": "1" if device == "cpu" else "0",
     }
-    request = Request(
-        "http://127.0.0.1:8081/generate",
-        data=json.dumps(payload).encode(),
-        headers={"Content-Type": "application/json"},
-    )
-    with OPENER.open(request, timeout=600) as response:
-        model = response.read(MAX_GLB_BYTES + 1)
+    with TemporaryDirectory(prefix="food-lab-") as folder:
+        source = Path(folder) / f"reference.{suffix}"
+        source.write_bytes(image)
+        output = Path(folder) / "output"
+        command = [
+            str(python), str(script), str(source), "--output-dir", str(output),
+            "--device", device, "--pretrained-model", str(weights),
+        ]
+        # The request supplies only the bytes written to the generated path.
+        subprocess.run(  # nosec B603
+            command, cwd=directory, env=environment, check=True, timeout=600,
+            stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        )
+        try:
+            with (output / "0" / "mesh.glb").open("rb") as result:
+                model = result.read(MAX_GLB_BYTES + 1)
+        except FileNotFoundError as exc:
+            raise ValueError("SF3D did not export a mesh") from exc
     validate_glb(model)
     return model
 
@@ -43,8 +58,7 @@ def validate_glb(model):
     if chunk_size % 4 or not 0 < chunk_size <= len(model) - 20:
         raise ValueError("GLB JSON chunk")
     document = json.loads(model[20:20 + chunk_size])
-    # GLB images and buffers must be embedded. The worker may return an
-    # untextured mesh on paint failure even though it responded with HTTP 200.
+    # GLB images and buffers must be embedded.
     try:
         images = document.get("images", [])
         buffers = document.get("buffers", [])
