@@ -2,3 +2,9 @@ __pycache__/
 *.pyc
 .venv/
 .env
+node_modules/
+frontend/dist/
+coverage/
+.coverage
+*.sqlite3
+.ruff_cache/
